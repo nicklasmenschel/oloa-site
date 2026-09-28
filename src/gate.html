@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>OLOA</title>
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Jost:wght@400;600&display=swap">
+<style>
+  :root{--cream:#fef9ed;--cobalt:#2354a5;--brown:#9d612a}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{min-height:100vh;display:grid;place-items:center;padding:1.5rem;background:var(--cream);color:var(--cobalt);
+       font-family:'Jost','Futura',sans-serif}
+  body.checking main{visibility:hidden}
+  main{width:100%;max-width:360px;text-align:center}
+  img{height:44px;width:auto;margin:0 auto 2rem;display:block}
+  h1{font-family:'Baloo 2',ui-rounded,sans-serif;font-weight:800;font-size:1.9rem;line-height:1.1;margin-bottom:1.6rem}
+  form{display:flex;flex-direction:column;gap:.8rem}
+  input{font:inherit;font-size:1rem;color:var(--cobalt);background:transparent;text-align:center;
+        border:2.5px solid var(--cobalt);border-radius:999px;padding:.75rem 1.2rem;outline:none}
+  input:focus-visible{box-shadow:3px 3px 0 var(--cobalt)}
+  button{font:inherit;font-weight:600;text-transform:uppercase;letter-spacing:.14em;font-size:.8rem;cursor:pointer;
+         background:var(--cobalt);color:var(--cream);border:2.5px solid var(--cobalt);border-radius:999px;padding:.8rem 1.5rem}
+  button:disabled{opacity:.6;cursor:wait}
+  .err{min-height:1.4em;font-size:.9rem;color:var(--brown)}
+</style>
+</head>
+<body class="checking">
+<main>
+  <img src="/assets/logotype.png" alt="OLOA">
+  <h1>Bientôt disponible</h1>
+  <form id="gate">
+    <label for="pw" style="position:absolute;left:-9999px">Mot de passe</label>
+    <input id="pw" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
+    <button type="submit">Entrer</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+</main>
+<script>
+(function () {
+  var PAYLOAD = "__PAYLOAD__";
+  var KEY = 'oloa-pass';
+
+  function b64(s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); }
+
+  async function open(password) {
+    var p = PAYLOAD.split('.');
+    var salt = b64(p[0]), iv = b64(p[1]), data = b64(p[2]), iterations = Number(p[3]);
+    var base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+    var key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: iterations, hash: 'SHA-256' },
+      base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    var html = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, data));
+    document.open(); document.write(html); document.close();
+  }
+
+  function normalize(v) { return v.trim().toUpperCase(); }
+  function remember(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+  function recall() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function forget() { try { localStorage.removeItem(KEY); } catch (e) {} }
+
+  var form = document.getElementById('gate'), input = document.getElementById('pw'),
+      err = document.getElementById('err'), btn = form.querySelector('button');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var pw = normalize(input.value);
+    btn.disabled = true; err.textContent = '';
+    try { await open(pw); remember(pw); }
+    catch (x) { err.textContent = 'Mot de passe incorrect.'; btn.disabled = false; input.select(); }
+  });
+
+  var saved = recall();
+  (saved ? open(saved) : Promise.reject()).catch(function () {
+    if (saved) forget();
+    document.body.classList.remove('checking');
+    input.focus();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+# The readable page stays on this machine only — the repo is public, and
+# committing it would publish the content the password gate protects.
+src/site.html
