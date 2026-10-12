@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>OLOA</title>
-<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="icon" type="image/png" href="/assets/favicon_v3_cobalt.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Jost:wght@400;600&display=swap">
 <style>
-  :root{--cream:#fef9ed;--cobalt:#2354a5;--brown:#9d612a}
+  :root{--cream:#fbf6ea;--cobalt:#2354a5;--brown:#9d612a}
   *{margin:0;padding:0;box-sizing:border-box}
   body{min-height:100vh;display:grid;place-items:center;padding:1.5rem;background:var(--cream);color:var(--cobalt);
        font-family:'Jost','Futura',sans-serif}
   body.checking main{visibility:hidden}
   main{width:100%;max-width:360px;text-align:center}
-  img{height:44px;width:auto;margin:0 auto 2rem;display:block}
+  .logo{display:block;height:52px;aspect-ratio:760/369;margin:0 auto 2rem;background:var(--cobalt);-webkit-mask:url(/assets/logo_oloa_black.png) center/contain no-repeat;mask:url(/assets/logo_oloa_black.png) center/contain no-repeat}
   h1{font-family:'Baloo 2',ui-rounded,sans-serif;font-weight:800;font-size:1.9rem;line-height:1.1;margin-bottom:1.6rem}
   form{display:flex;flex-direction:column;gap:.8rem}
   input{font:inherit;font-size:1rem;color:var(--cobalt);background:transparent;text-align:center;
@@ -28,7 +28,7 @@
 </head>
 <body class="checking">
 <main>
-  <img src="/assets/logotype.png" alt="OLOA">
+  <span class="logo" role="img" aria-label="oloa"></span>
   <h1>Bientôt disponible</h1>
   <form id="gate">
     <label for="pw" style="position:absolute;left:-9999px">Mot de passe</label>
